@@ -1,0 +1,60 @@
+{
+    "$schema": "https://www.krakend.io/schema/v3.json",
+    "version": 3,
+    "endpoints": [
+
+            {
+              "endpoint": "/v1/products",
+              "method": "GET",
+              "backend": [
+                {
+                  "url_pattern": "/v1/products",
+                  "method": "GET",
+                  "host": [ "http://products" ],
+                  "is_collection": true,
+                  "mapping": {
+                    "collection": "products"
+                  }
+                }
+              ]
+            },
+            {
+                "endpoint": "/v1/products/{name}",
+                "method": "GET",
+                "output_encoding": "no-op",
+                "backend": [
+                  {
+                    "encoding": "no-op",
+                    "url_pattern": "/v1/products/{name}",
+                    "method": "GET",
+                    "host": [ "http://products" ]
+                  }
+                ]
+              },
+              {
+                "endpoint": "/v1/data",
+                "method": "GET",
+                "backend": [
+                    {
+                        "url_pattern": "/v1/products",
+                        "method": "GET",
+                        "host": [ "http://products" ],
+                        "is_collection": true,
+                        "mapping": {
+                          "collection": "products"
+                        }
+                    },
+                    {
+                        "url_pattern": "/v1/shops",
+                        "method": "GET",
+                        "host": [ "http://shops" ],
+                        "is_collection": true,
+                        "mapping": {
+                          "collection": "shops"
+                        }
+                      }
+                  ]
+              }
+          ],
+    "extra_config": {}
+}
