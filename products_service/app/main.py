@@ -1,21 +1,37 @@
-from fastapi import FastAPI, HTTPException
-from app.product import Product
+from fastapi import FastAPI, HTTPException, Depends
+from sqlalchemy.orm import Session
+from .database import get_db
+from . import crud, models, schemas
+from .database import SessionLocal, engine
 
-products: list[Product] = [
-    Product(0, 'Apple', '45', '0'),
-    Product(1, 'Fish', '210', '1')
-]
+models.Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
 
+@app.post("/")
+def create(details: schemas.CreateProduct, db: Session = Depends(get_db)):
+    to_create = models.Product(
+        name = details.name,
+        price = details.price,
+        shopid = details.shopid
+    )
+    db.add(to_create)
+    db.commit()
+    return {
+        "success": True,
+        "created_id":to_create.id
+    }
 
 @app.get("/v1/products")
-async def get_products():
+async def read_products(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
+    products = crud.get_products(db, skip=skip, limit=limit)
     return products
 
-@app.get("/v1/products/{name}")
-async def get_products_by_name(name: str):
-    output = [item for item in products if item.name == name]
-    if len(output) > 0:
-        return output[0]
-    raise HTTPException(status_code=404, detail="Product not found")
+
+@app.get("/v1/products/{id}")
+async def read_product_by_id(id: int, db: Session = Depends(get_db)):
+    result = crud.get_products_by_id(db, id = id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return result
  
