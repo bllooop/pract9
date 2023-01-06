@@ -2,13 +2,13 @@ from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from .database import get_db
 from . import crud, models, schemas
-from .database import SessionLocal, engine
+from .database import engine
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-@app.post("/")
+@app.post("/v1/products")
 def create(details: schemas.CreateProduct, db: Session = Depends(get_db)):
     to_create = models.Product(
         name = details.name,
@@ -35,3 +35,4 @@ async def read_product_by_id(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Product not found")
     return result
  
+
