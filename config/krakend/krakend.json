@@ -19,15 +19,30 @@
               ]
             },
             {
-                "endpoint": "/v1/products/{name}",
+                "endpoint": "/v1/products/{id}",
                 "method": "GET",
                 "output_encoding": "no-op",
                 "backend": [
                   {
                     "encoding": "no-op",
-                    "url_pattern": "/v1/products/{name}",
+                    "url_pattern": "/v1/products/{id}",
                     "method": "GET",
                     "host": [ "http://products" ]
+                  }
+                ]
+              },
+              {
+                "endpoint": "/v1/shops",
+                "method": "GET",
+                "backend": [
+                  {
+                    "url_pattern": "/v1/shops",
+                    "method": "GET",
+                    "host": [ "http://shops" ],
+                    "is_collection": true,
+                    "mapping": {
+                      "collection": "shops"
+                    }
                   }
                 ]
               },

@@ -5,12 +5,27 @@ services:
     build: ./products_service
     ports:
       - 8000:80
+    depends_on:
+      - db
   
   shops:
     build: ./shop_service
     ports:
       - 8001:80
+    depends_on:
+      - db
   
+  db:
+    image: postgres:14.0
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: diana
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: microdb
+    ports: 
+      - 5432:5432
+
   krakend_ce:
     image: devopsfaith/krakend:watch
     volumes:
@@ -21,3 +36,6 @@ services:
     depends_on:
       - products
       - shops
+
+volumes:
+  postgres_data:
