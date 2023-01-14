@@ -3,6 +3,14 @@ from sqlalchemy.orm import Session
 from .database import get_db
 from . import crud, models, schemas
 from .database import engine
+from opentelemetry import trace
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from prometheus_fastapi_instrumentator import Instrumentator
+
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -34,5 +42,32 @@ async def read_product_by_id(id: int, db: Session = Depends(get_db)):
     if result is None:
         raise HTTPException(status_code=404, detail="Product not found")
     return result
- 
+
+@app.get("/__health")
+async def check_service():
+    return
+
+
+resource = Resource(attributes={
+    SERVICE_NAME: "products-service"
+})
+
+jaeger_exporter = JaegerExporter(
+    agent_host_name="jaeger",
+    agent_port=6831,
+)
+
+provider = TracerProvider(resource=resource)
+processor = BatchSpanProcessor(jaeger_exporter)
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+
+FastAPIInstrumentor.instrument_app(app)
+
+
+
+@app.on_event("startup")
+async def startup():
+    Instrumentator().instrument(app).expose(app)
+
 
