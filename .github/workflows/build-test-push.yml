@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Build the test Docker image
-      run: docker build . --file Dockerfile -t products-service
+      run: docker build . --file /Users/royalblue/Downloads/микро/pract9/products_service/Dockerfile -t products-service
 
     - name: Checkout the repo
       uses: actions/checkout@v3
