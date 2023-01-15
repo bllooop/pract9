@@ -30,6 +30,17 @@
               ]
             },
             {
+              "endpoint": "/v1/shops",
+              "method": "POST",
+              "backend": [
+                {
+                  "url_pattern": "/v1/shops",
+                  "method": "POST",
+                  "host": [ "http://shops" ]
+                }
+              ]
+            },
+            {
                 "endpoint": "/v1/products/{id}",
                 "method": "GET",
                 "output_encoding": "no-op",
@@ -54,6 +65,19 @@
                     "mapping": {
                       "collection": "shops"
                     }
+                  }
+                ]
+              },
+              {
+                "endpoint": "/v1/shops/{id}",
+                "method": "GET",
+                "output_encoding": "no-op",
+                "backend": [
+                  {
+                    "encoding": "no-op",
+                    "url_pattern": "/v1/shops/{id}",
+                    "method": "GET",
+                    "host": [ "http://shops" ]
                   }
                 ]
               },

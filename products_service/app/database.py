@@ -1,11 +1,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from opentelemetry import trace
-from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
-from opentelemetry.sdk.trace import TracerProvider
+
 
 SQLALCHEMY_DATABASE_URL = "postgresql://diana:password@db:5432/microdb"
+# SQLALCHEMY_DATABASE_URL = "postgresql://diana:password@localhost/microdb"
+
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
@@ -21,8 +21,3 @@ def get_db():
     finally:
         db.close()
 
-trace.set_tracer_provider(TracerProvider())
-SQLAlchemyInstrumentor().instrument(
-    engine=engine,
-    service="products-service",
-)

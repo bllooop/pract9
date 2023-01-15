@@ -10,7 +10,9 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from prometheus_fastapi_instrumentator import Instrumentator
-
+from opentelemetry import trace
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+from opentelemetry.sdk.trace import TracerProvider
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -64,6 +66,11 @@ trace.set_tracer_provider(provider)
 
 FastAPIInstrumentor.instrument_app(app)
 
+trace.set_tracer_provider(TracerProvider())
+SQLAlchemyInstrumentor().instrument(
+    engine=engine,
+    service="products-service",
+)
 
 
 @app.on_event("startup")
